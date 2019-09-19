@@ -76,6 +76,30 @@ public class SteeringBehavior : MonoBehaviour {
 
 	}
 
+    public SteeringOutput NewSeek() {
+        SteeringOutput steering = new SteeringOutput{
+            linear = new Vector3(0.0F, 0.0F, 0.0F)
+        };
+        steering.linear = target.position - agent.position;
+        float distance = (target.position - agent.position).magnitude;
+        if (distance < slowRadiusL) {
+            DynamicArrive();
+        }
+        else {
+            steering.linear.Normalize();
+            steering.linear *= maxAcceleration;
+        }
+        return steering;
+}
+
+    public SteeringOutput NewFlee() {
+        SteeringOutput steering = new SteeringOutput{
+            linear = agent.position - target.position
+        };
+        steering.linear.Normalize();
+        steering.linear *= maxAcceleration;
+        return steering;
+    }
 
     public Vector3 Flee() {
         Vector3 steering = new Vector3();
@@ -136,7 +160,7 @@ public class SteeringBehavior : MonoBehaviour {
         return steering;
     }
 
-    public Vector3 Pursue() {
+    public SteeringOutput Pursue() {
         /* OVERRIDES the target data in seek (in other words 
          * this class has two bits of data called target: 
          * Seek.target is the superclass target which
@@ -166,7 +190,8 @@ public class SteeringBehavior : MonoBehaviour {
         }
         // Put the target together 
         // Create the structure to hold our output
-        Vector3 steering = this.Seek();
+        SteeringOutput steering = new SteeringOutput();
+        steering.linear = this.Seek();
         //SteeringOutput steering = new SteeringOutput();
         //steering.linear += (target.position + target.velocity * prediction);
         return steering;
