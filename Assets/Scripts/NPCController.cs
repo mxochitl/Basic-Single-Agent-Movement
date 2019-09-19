@@ -78,12 +78,15 @@ public class NPCController : MonoBehaviour {
                 if (label) {
                     label.text = name.Replace("(Clone)", "") + "\nAlgorithm: Fourth algorithm";
                 }
-                Start(); 
-                SteeringOutput steering4= ai.DynamicArrive();
-                linear = steering4.linear;
-                angular = steering4.angular;
-                // linear = ai.whatever();  -- replace with the desired calls
-                // angular = ai.whatever();
+                // Delete start() here!!!
+
+                // Call Flee Function
+                linear = ai.Seek();
+                angular = 0;
+
+                //SteeringOutput steering4= ai.DynamicArrive();
+                //linear = steering4.linear;
+                //angular = steering4.angular;
                 break;
             case 5:
                 if (label) {
