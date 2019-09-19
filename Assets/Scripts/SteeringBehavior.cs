@@ -53,6 +53,42 @@ public class SteeringBehavior : MonoBehaviour {
         //wanderOrientation = agent.orientation;
     }
 
+
+    public Vector3 Seek() {
+        Vector3 steering = new Vector3(0.0F, 0.0F, 0.0F);
+    
+        steering = target.position - agent.position;
+
+        // if (target.position - agent.position).magnitude is in slow radius
+        // call dynamicArive instead 
+        // else
+        float d = (target.position - agent.position).magnitude;
+
+        if(d < slowRadiusL){
+            DynamicArrive();
+        }
+        else{
+            steering.Normalize();
+            steering *= maxAcceleration;
+        }
+
+        return steering;
+
+	}
+
+
+    public Vector3 Flee() {
+        Vector3 steering = new Vector3();
+    
+        steering = agent.position - target.position;
+
+        steering.Normalize();
+        steering *= maxAcceleration;
+
+        return steering;
+
+	}
+
     public SteeringOutput DynamicArrive() {
 
         /* This functions follows the pseudo-code for arrive in the book
