@@ -90,15 +90,9 @@ public class SteeringBehavior : MonoBehaviour {
 	}
 
     public SteeringOutput DynamicArrive() {
-
         /* This functions follows the pseudo-code for arrive in the book
          * AI for Games by Ian Millington
          */
-
-        //        public float maxSpeed;
-        //public float targetRadiusL;
-        //public float slowRadiusL;
-        //public float timeToTarget;
 
         // Create the structure to hold our output
         SteeringOutput steering = new SteeringOutput();
@@ -113,20 +107,16 @@ public class SteeringBehavior : MonoBehaviour {
         }
 
         // If we are outside of the slowRadius, then go max speed
-        if (distance > slowRadiusL) {
+        else if (distance > slowRadiusL) {
             //float targetSpeed = maxSpeed;
             target.maxSpeed = maxSpeed;
         }
 
-
         // Otherwise calculate a scaled speed
         else {
+            agent.DrawCircle(agent.position, 1.0f);
             float targetSpeed = maxSpeed * (distance / slowRadiusL);
             // The target velocity combines speed and direction 
-            //Vector3 targetVelocity = direction;
-            //targetVelocity.Normalize();
-            //targetVelocity *= targetSpeed;
-
             target.velocity = direction;
             target.velocity.Normalize();
             target.velocity *= target.maxSpeed;
@@ -136,29 +126,50 @@ public class SteeringBehavior : MonoBehaviour {
             steering.linear /= timeToTarget;
 
             // Check if acceleration is too fast 
-            if (steering.linear.magnitude > maxAcceleration) {
+            if (steering.linear.magnitude > maxAcceleration) { //maxAcceleration
                 steering.linear.Normalize();
                 steering.linear *= maxAcceleration;
             }
-
-         
         }
-
         // Output the steering
         steering.angular = 0;
         return steering;
+    }
 
-        //// The target velocity combines speed and direction 
-        //Vector3 targetVelocity = direction;
-        //targetVelocity.Normalize();
-        //targetVelocity *= targetSpeed;
+    public Vector3 Pursue() {
+        /* OVERRIDES the target data in seek (in other words 
+         * this class has two bits of data called target: 
+         * Seek.target is the superclass target which
+         * will be automatically calculated and shouldn’t
+         * be set, and Pursue.target is the target we’re pursuing). 
+         */
 
-        //targetSpeed = maxSpeed * (distance / slowRadius)
-        //targetVelocitytargetSpeedatdirection 
-        //# Acceleration tries to get to the target velocity
-        //steering.linear= targetVelocity- character.velocity
-        //steering.linear= steering.linear/timeToTarget
+        // Other data is derived from the Seek() function 
+        float prediction;
 
+        // 1.  Calculate the target to delegate to seek
+        // Work out the distance to target 
+        Vector3 direction = target.position - agent.position;
+        float distance = direction.magnitude;
+
+        // Work out our current speed 
+        float speed = agent.velocity.magnitude;
+
+        // Check if speed is too small to give a reasonable prediction time
+        if (speed <= distance / maxPrediction) {
+            prediction = maxPrediction;
+        }
+
+        //  Otherwise calculate the prediction time 
+        else {
+            prediction = distance / speed; 
+        }
+        // Put the target together 
+        // Create the structure to hold our output
+        Vector3 steering = this.Seek();
+        //SteeringOutput steering = new SteeringOutput();
+        //steering.linear += (target.position + target.velocity * prediction);
+        return steering;
     }
 
 }

@@ -67,11 +67,9 @@ public class NPCController : MonoBehaviour {
                 if (label) {
                     label.text = name.Replace("(Clone)", "") + "\nAlgorithm: Dynamic Third algorithm!";
                 }
-                //Start();
-                SteeringOutput steering = ai.DynamicArrive();
-                linear = steering.linear;
-                angular = steering.angular;
-             
+                linear = ai.Pursue();
+                //linear = steering.linear;
+                //angular = steering.angular; 
                 break;
 
             case 4:
